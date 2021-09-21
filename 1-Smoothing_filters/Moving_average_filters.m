@@ -15,12 +15,14 @@
 
 %% Preliminaries 
 %% i) Load ECG_template.mat acquisition parameters of the signal
+
 % replace the following path to ad
 clear all;
 close all;
 typical_ECG = load('D:\Semester 7\2. Biosignal Processing-3\Assignments\Biosignal-Digital-Filters\Data\ECG_template.mat');
 ecg_template = typical_ECG.ECG_template;
 %% ii) Plot the loaded signal with the adjusted time scale
+
 fs = 500; %sampling frequency
 [~,N] = size(ecg_template); %Number of datapoints
 T = linspace(0,N/fs,N); %Time scale
@@ -34,6 +36,7 @@ ylabel('mV')
 %hold;
 
 %% iii) Add white Gaussian noise of 5 dB
+
 nECG = awgn(ecg_template,5,'measured');
 %plot the noise added ECG Signal
 figure('Name','Noise added ECG signal')
@@ -43,4 +46,21 @@ xlabel('Time (s)')
 ylabel('mV')
 
 
-%%
+%% iv) Plot the power spectral density
+
+figure('Name', 'PSD')
+window = rectwin(N);
+[px,w] = periodogram(nECG,window,[],fs);
+[pxt,wt] = periodogram(ecg_template,window,[],fs);
+semilogy(w,px,wt,pxt)
+grid on
+title('Power Spectral Density Estimate')
+legend('ECG signal with noise','ECG template signal');
+xlabel('Frequency-Hz')
+ylabel('Amplitude')
+
+%% MA(3) filter implementation with a customised script
+
+%% i) MATLAB script for a MA(3) filter
+
+
