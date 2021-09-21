@@ -64,10 +64,21 @@ ylabel('Amplitude')
 %% i) MATLAB script for a MA(3) filter
 
 %function defined at the bottom of the file
-ma3ECG_1 = MAfilt(nECG,3)
+MA3_order = 3;
+ma3ECG_1 = MAfilt(nECG,MA3_order);
 
+%% ii) Derive the group delay
+group_delay_MA3 = floor((MA3_order)/2)*(1/fs);
 
-
+%% iii) Plot and compare
+figure('Name','MA(3) filter evaluation')
+plot(T,nECG,'r')
+hold;
+plot(T-group_delay_MA3,ma3ECG_1,'b') %adjusted for group delay
+title('Noisy signal and filtered signal')
+legend('ECG signal with noise','MA3 filtered signal');
+xlabel('Time (s)')
+ylabel('(mV)')
 
 
 %% Moving average filter function
