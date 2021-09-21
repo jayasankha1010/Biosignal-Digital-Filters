@@ -80,6 +80,18 @@ legend('ECG signal with noise','MA3 filtered signal');
 xlabel('Time (s)')
 ylabel('(mV)')
 
+%% iv) Overlapping PSDs
+
+figure('Name', 'PSD')
+window = rectwin(N);
+[px,w] = periodogram(nECG,window,[],fs);
+[pxt,wt] = periodogram(ma3ECG_1,window,[],fs);
+semilogy(w,px,wt,pxt)
+grid on
+title('Power Spectral Density Estimate')
+legend('ECG signal with noise','MA3 Filtered signal');
+xlabel('Frequency-Hz')
+ylabel('Amplitude')
 
 %% Moving average filter function
 
