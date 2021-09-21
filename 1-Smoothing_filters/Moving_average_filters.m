@@ -99,14 +99,45 @@ ylabel('Amplitude')
 b = ones(1,MA3_order);
 a=  MA3_order;
 ma3ECG_2 = filter(b,a,nECG);
+group_delay_3 = MA3_order/2*(1/fs);
 %% ii) Compare filtered signal with noisy signal and template
 figure('Name','Comparing nECG, ECG_template and ma3ECG_2');
-plot(T,nECG,T,ma3ECG_2,T,ecg_template,'k');
+plot(T,nECG,T-group_delay_3,ma3ECG_2,T,ecg_template,'k');
 title('Comparing nECG, ECG_template and ma3ECG_2');
 legend('nECG','ma3ECG_2','ECG_template');
 xlabel('Time(s)')
 ylabel('mV')
 %% iii) inspect the magnitude response, phase response and the pole-zero plot
+fvtool(b,a)
+
+%% MA(10) filter implementation with the MATLAB built-in function
+
+%% i) Compare MA10 vs MA3 using fvtools
+
+MA10_order=10;
+b10 = ones(1,MA10_order);
+a10 =  MA10_order;
+fvtool(b,a)
+
+%% filter with MA10
+
+ma10ECG = filter(b10,a10,nECG);
+group_delay_10 = MA10_order/2*(1/fs);
+
+%% Plot all above
+figure('Name','Comparing MA(3) and MA(10)');
+plot(T,nECG,'y',T,ecg_template,'k',T-group_delay_3,ma3ECG_2,'b',T-group_delay_10,ma10ECG,'r');
+title('Comparing MA(3) and MA(10)');
+legend ('nECG', 'ECG_{template}','ma3ECG_2','ma10ECG')
+xlabel('Time(s)')
+ylabel('mV')
+
+figure('Name','Comparing MA(3) and MA(10)');
+plot(T,ecg_template,'k',T-group_delay_10,ma10ECG,'r');
+title('Comparing MA(3) and MA(10)');
+legend ('nECG', 'ECG_{template}','ma3ECG_2','ma10ECG')
+xlabel('Time(s)')
+ylabel('mV')
 
 %% Moving average filter function
 
