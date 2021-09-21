@@ -100,7 +100,12 @@ b = ones(1,MA3_order);
 a=  MA3_order;
 ma3ECG_2 = filter(b,a,nECG);
 %% ii) Compare filtered signal with noisy signal and template
-
+figure('Name','Comparing nECG, ECG_template and ma3ECG_2');
+plot(T,nECG,T,ma3ECG_2,T,ecg_template,'k');
+title('Comparing nECG, ECG_template and ma3ECG_2');
+legend('nECG','ma3ECG_2','ECG_template');
+xlabel('Time(s)')
+ylabel('mV')
 %% iii) inspect the magnitude response, phase response and the pole-zero plot
 
 %% Moving average filter function
