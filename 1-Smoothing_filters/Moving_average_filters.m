@@ -63,4 +63,23 @@ ylabel('Amplitude')
 
 %% i) MATLAB script for a MA(3) filter
 
+%function defined at the bottom of the file
+ma3ECG_1 = MAfilt(nECG,3)
 
+
+
+
+
+%% Moving average filter function
+
+%brief: a function is defined to create a MA filter
+%params: x - input vector , order - order of the MA filter
+%return: y - filtered signal vector
+
+function y = MAfilt(x,order)
+    [~,nn] = size(x);
+    y = zeros(1,nn);
+    for i = 1:nn
+        y(i) = (sum(x(max([i-order+1,1]):i)))/min([i,order]);
+    end
+end
