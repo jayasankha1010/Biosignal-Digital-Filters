@@ -14,23 +14,33 @@
 
 
 %% Preliminaries 
-%% Load ECG_template.mat acquisition parameters of the signal
+%% i) Load ECG_template.mat acquisition parameters of the signal
 % replace the following path to ad
 clear all;
 close all;
 typical_ECG = load('D:\Semester 7\2. Biosignal Processing-3\Assignments\Biosignal-Digital-Filters\Data\ECG_template.mat');
 ecg_template = typical_ECG.ECG_template;
-%% Plot the loaded signal with the adjusted time scale
+%% ii) Plot the loaded signal with the adjusted time scale
 fs = 500; %sampling frequency
 [~,N] = size(ecg_template); %Number of datapoints
 T = linspace(0,N/fs,N); %Time scale
 
 %plot the typical ECG Signal template
-figure('Name','Raw Data')
+figure('Name','ECG Template')
 plot(T,ecg_template)
 title('Typical ECG Signal')
 xlabel('Time (s)')
 ylabel('mV')
+%hold;
 
-%% 
+%% iii) Add white Gaussian noise of 5 dB
+nECG = awgn(ecg_template,5,'measured');
+%plot the noise added ECG Signal
+figure('Name','Noise added ECG signal')
+plot(T,nECG,'r')
+title('Noise added ECG signal')
+xlabel('Time (s)')
+ylabel('mV')
 
+
+%%
