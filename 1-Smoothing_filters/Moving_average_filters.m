@@ -93,6 +93,16 @@ legend('ECG signal with noise','MA3 Filtered signal');
 xlabel('Frequency-Hz')
 ylabel('Amplitude')
 
+%% MA(3) filter implementation with the MATLAB built-in function
+
+%% i) In-built filter for MA3
+b = ones(1,MA3_order);
+a=  MA3_order;
+ma3ECG_2 = filter(b,a,nECG);
+%% ii) Compare filtered signal with noisy signal and template
+
+%% iii) inspect the magnitude response, phase response and the pole-zero plot
+
 %% Moving average filter function
 
 %brief: a function is defined to create a MA filter
