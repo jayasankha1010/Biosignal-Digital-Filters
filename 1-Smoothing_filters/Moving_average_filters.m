@@ -159,6 +159,8 @@ title('Comparing MA(3) and MA(10)');
 xlabel('Moving Average Filter Order');
 ylabel('Mean Squared Error');
 
+%% iii) Suggest the reason for high MSE values for low and high order MA filters
+
 %% Moving average filter function
 
 %brief: a function is defined to create a MA filter
