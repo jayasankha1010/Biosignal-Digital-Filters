@@ -139,6 +139,26 @@ legend ('nECG', 'ECG_{template}','ma3ECG_2','ma10ECG')
 xlabel('Time(s)')
 ylabel('mV')
 
+%% Optimum MA(N) filter order 
+
+%% i) calculate the mean-squared-error (MSE)
+
+% mse = calcMSE(ecg_template,nECG,100) %this calculates the Mean square
+% error
+MSEs = [];
+orders = [];
+max_order =80;
+for i = 2:max_order
+    orders(end+1) = i;
+    MSEs(end+1) = calcMSE(ecg_template,nECG,i);
+end
+%% ii) plot MSE vs. N.
+figure('Name','Optimum Moving Average filter')
+plot(orders,MSEs);
+title('Comparing MA(3) and MA(10)');
+xlabel('Moving Average Filter Order');
+ylabel('Mean Squared Error');
+
 %% Moving average filter function
 
 %brief: a function is defined to create a MA filter
