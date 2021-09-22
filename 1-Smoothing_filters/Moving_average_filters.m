@@ -152,3 +152,15 @@ function y = MAfilt(x,order)
         y(i) = (sum(x(max([i-order+1,1]):i)))/min([i,order]);
     end
 end
+
+function mse = calcMSE(template,x,order)
+    b = ones(1,order);
+    a = order;
+    group_d = floor(order/2);
+    filtered = filter(b,a,x); 
+    adjusted = zeros(size(template))
+    adjusted(1:length(template)-group_d+1)= filtered(group_d:end);
+    errors = template-adjusted;
+    sq_er = errors.^2;
+    mse = (sum(sq_er))/length(sq_er);
+end
