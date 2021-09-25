@@ -23,17 +23,29 @@ ylabel('mV')
 %% Optimum SG filter 
 %% i) Calculate the optimum parameters
 
-L_range = 16;
-N_max = min([(2*L_range),30]); %adjust the maximum order here
-err = NaN([L_range,N_max]);
+L_max = 20;
+N_max = min([(2*L_max),30]); %adjust the maximum order here
+err = NaN([L_max,2*L_max]);
+
+optimum_L = 100;
+optimum_N = 100;
+least_err = 100;
                                                                                                                                                                                                                                        
-for L = 2:20
-    for N = 1:floor(L/2)
-        calcMSE_SG(ecg_template,nECG,N,2*L+1)
+for L = 2:L_max
+    for N = 1:2*L
+        err(L,N) = calcMSE_SG(ecg_template,nECG,N,2*L+1);
+        if (least_err > err(L,N))
+            least_err = err(L,N);
+            optimum_L = L;
+            optimum_N = N;
+        end
     end
 end
 
-
+figure
+surf(err)
+optimum_L
+optimum_N
 
 %%
 
