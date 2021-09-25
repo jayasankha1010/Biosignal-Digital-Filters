@@ -33,7 +33,7 @@ least_err = 100;
                                                                                                                                                                                                                                        
 for L = 2:L_max
     for N = 1:2*L
-        err(L,N) = calcMSE_SG(ecg_template,nECG,N,2*L+1);
+        err(L,N) = calcMSE_SG(ecg_template,nECG,N,L);
         if (least_err > err(L,N))
             least_err = err(L,N);
             optimum_L = L;
