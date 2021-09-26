@@ -43,4 +43,12 @@ for i=1:length(thresh)-1
         j=j+1;
     end
 end
+%% Make epochs
+% Window ABR epochs -80:399 points selected 
+% A window from -2ms to +10ms from stimulus point
+j = 0;
+for i=1:length(stim_point) 
+    j = j + 1;
+    epochs(:,j) = ABR_rec((stim_point(i)-80:stim_point(i)+399),2); 
+end
 
