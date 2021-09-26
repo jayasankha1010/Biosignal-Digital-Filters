@@ -52,3 +52,12 @@ for i=1:length(stim_point)
     epochs(:,j) = ABR_rec((stim_point(i)-80:stim_point(i)+399),2); 
 end
 
+%% calcualte and plot average of all epochs
+ensmbl_avg = mean(epochs(:,(1:length(stim_point))),2);
+
+figure,
+plot((-80:399)/40,ensmbl_avg)
+xlabel('Time (ms)'), ylabel('Voltage(uV)')
+title(['Ensemble averaged ABR from ',num2str(length(epochs)),' epochs'])
+
+
