@@ -127,3 +127,17 @@ figure, plot(lags/fs,cross_corr)
 title('Cross Correllation with Sample ECG Waveform')
 xlabel('Lag (s)'), ylabel('Normalized Score')
 
+%% extracting pulses
+
+Threshold = 0.08;
+waves = lags(cross_corr > Threshold); 
+pulses = [];
+pulse_values = []; 
+for i = 1:length(waves)-1
+    if waves(i+1)- waves(i)> 15 % remove repititions or closer values
+        pulses = [pulses waves(i)+1]; % add 1 to map lag to index
+        pulse_values = [pulse_values cross_corr(floor(length(cross_corr)/2) + waves(i)+1)]; % to map into a index
+    end
+end
+
+%% 
