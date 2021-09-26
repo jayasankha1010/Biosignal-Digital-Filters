@@ -60,4 +60,26 @@ plot((-80:399)/40,ensmbl_avg)
 xlabel('Time (ms)'), ylabel('Voltage(uV)')
 title(['Ensemble averaged ABR from ',num2str(length(epochs)),' epochs'])
 
+%% Improvement of SNR with ensemble averaging
+M = length(epochs);
+mse_k = zeros(M,1);
+snr_k = zeros(M,1);
+
+for m = 1:M
+    yk = mean(epochs(:,(1:m)),2);
+    mse_k(m) = immse(ensmbl_avg,yk);
+    snr_k(m) = snr(ensmbl_avg,ensmbl_avg-yk);
+end
+
+figure;
+plot(mse_k);
+
+k = linspace(1,M,M);
+ideal_SNR = 10.*log10(k)+snr_k(1);
+figure,
+% plot(k,mse_k)% linear plot
+% xlabel('Epochs(k)'), ylabel('MSE')
+plot(k,10*log10(mse_k))% logrithmic plot
+xlabel('Epochs(k)'), ylabel('MSE (dB)')
+title('MSE variation for ensemble averaging')
 
