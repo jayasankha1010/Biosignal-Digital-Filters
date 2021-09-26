@@ -83,3 +83,36 @@ plot(k,10*log10(mse_k))% logrithmic plot
 xlabel('Epochs(k)'), ylabel('MSE (dB)')
 title('MSE variation for ensemble averaging')
 
+%% *2.2. Signal with repetitive patterns
+
+% The task in this section is to add Gaussian white noise to this signal to
+% emulate practical conditions and extract a single denoised ECG pulse using 
+% ensemble averaging. Here, the usage of ensemble averaging is justified 
+% since the ECG spectrum inevitably overlaps with white noise.
+
+% Viewing the signal and addition Gaussian white noise
+
+%% Signals with repetitive patterns
+
+% Clear workspace
+clear all;
+clc;
+
+%load ecg data
+load ECG_rec.mat;
+[~,t] = size(ECG_rec);
+fs = 128;
+T = linspace(0,t/fs,t);
+figure, plot(T(125:325),ECG_rec(125:325))
+title('ECG Recording with repitive pattern')
+xlabel('Time (s)')
+ylabel('Voltage (mV)')
+
+%% Extract a single PQRST wave
+[R_peaks, lcs] = findpeaks(ECG_rec,'MinPeakHeight',1);
+pulse_T = mean(lcs(2:end)-lcs(1:end-1));
+selected_pulse = lcs(50);
+ECG_template = ECG_rec(ceil(selected_pulse-0.5*pulse_T):ceil(selected_pulse+0.5*pulse_T));
+figure, plot(ECG_template)
+title('Sample ECG Waveform'),ylabel('Voltage (mV)')
+
