@@ -116,3 +116,14 @@ ECG_template = ECG_rec(ceil(selected_pulse-0.5*pulse_T):ceil(selected_pulse+0.5*
 figure, plot(ECG_template)
 title('Sample ECG Waveform'),ylabel('Voltage (mV)')
 
+%% add Gaussian white noise of 5dB to full ECG recording
+nECG = awgn(ECG_rec,5,'measured');
+
+%% Segmenting ECG into seperate epochs
+expanded_ECG_template = zeros(size(nECG)); 
+expanded_ECG_template(1:length(ECG_template)) = ECG_template;
+[cross_corr, lags] = xcorr(nECG,expanded_ECG_template,'coeff');
+figure, plot(lags/fs,cross_corr)
+title('Cross Correllation with Sample ECG Waveform')
+xlabel('Lag (s)'), ylabel('Normalized Score')
+
