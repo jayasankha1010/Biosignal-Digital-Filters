@@ -134,10 +134,53 @@ waves = lags(cross_corr > Threshold);
 pulses = [];
 pulse_values = []; 
 for i = 1:length(waves)-1
-    if waves(i+1)- waves(i)> 15 % remove repititions or closer values
+    if waves(i+1)- waves(i)> 20 % remove repititions or closer values
         pulses = [pulses waves(i)+1]; % add 1 to map lag to index
         pulse_values = [pulse_values cross_corr(floor(length(cross_corr)/2) + waves(i)+1)]; % to map into a index
     end
 end
 
-%% 
+%% Store pulses
+pulse_train = [];
+for i = 1:length(pulses)
+    pulse_train = [pulse_train; nECG(pulses(i):ceil(pulses(i)+pulse_T))]; %pulse extraction
+end
+
+
+%%  
+snr_values = zeros(size(pulses));
+mse_values = zeros(size(pulses));
+snr_values(1)=snr(ECG_template,pulse_train(1,:));
+mse_values(1) = immse(ECG_template, pulse_train(1,:));
+for k = 2:length(pulses)
+    % calculate error
+    mse_values(k) = immse(ECG_template, mean(pulse_train(1:k,:)));
+    snr_values(k) = snr(ECG_template,mean(pulse_train(1:k,:)));
+end
+%% SNR improvement
+plot(snr_values)
+title('Improvement of SNR of Ensemble Pulse'), xlabel('Number of Pulses in Ensemble Average'), ylabel('SNR (dB)')
+
+%% Plot the ensemble average and compare
+figure,plot(ECG_template,'LineWidth',1.5),hold on 
+plot(mean(pulse_train(1:10,:)))
+plot(mean(pulse_train(1:50,:)))
+title('ECG Sample and Ensemble Average'),ylabel('Amplitude(mV)'), xlabel('Number of Samples(n)')
+legend('ECG Sample','Ensemble Avg 10 epochs','Ensemble Avg 50 epochs')
+hold off
+
+%% Why xcorr is better
+Trange = fs*4;
+figure
+subplot(3,1,1);
+plot(linspace(1,Trange,Trange)/fs,ECG_rec(1:Trange))
+title('ECG recording'),xlabel('Time (s)'), ylabel('Amplitude (mV)')
+subplot(3,1,2);
+plot(linspace(1,Trange,Trange)/fs,cross_corr(floor(length(cross_corr)/2)+1:floor(length(cross_corr)/2+Trange)))
+title('Adjusted Xcorr values'),xlabel('Lag (s)'), ylabel('Norm Cross Correlation (mV)')
+
+subplot(3,1,3);
+plot(linspace(1,Trange,Trange)/fs,nECG(1:Trange)), hold on
+plot(pulse_locations(pulse_locations<Trange)/fs,values(pulses<Trange),'*')
+hold off
+title('Noisy ECG and Pusle starting points'),xlabel('Time (s)'), ylabel('Amplitude (mV)')
