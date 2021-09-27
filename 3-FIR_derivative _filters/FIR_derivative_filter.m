@@ -28,3 +28,10 @@ title('Noisy ECG Signal');
 xlabel('Time(s)');
 ylabel('Amplitude (mV)');
 legend('ECG signal', 'nECG');
+
+%% filter and plot
+FIR1 = filter([1 -1]/2,1,nECG);
+FIR3 = filter([1 0 -1],2,nECG);
+figure,plot(t,ECG_rec,'g',t,FIR1,t,FIR3)
+title('Filtered ECG Signal'), xlabel('Time(s)'), ylabel('Amplitude')
+legend('ECG signal', 'First Order Filtered', '3 Point Central Difference Filtered')
