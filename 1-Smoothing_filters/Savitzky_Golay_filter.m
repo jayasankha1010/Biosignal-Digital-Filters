@@ -6,9 +6,20 @@
 % Savitzky-Golay filter fits a polynomial of order N to an odd number of 
 %data points L’=2L+1(where L’ is an odd integer) in predefined window in 
 %a least-squares sense. A unique solution requires ???’-1.
-close all
 
 %% Apply SG(N,L)
+%%
+clear all;
+close all;
+typical_ECG = load('D:\Semester 7\2. Biosignal Processing-3\Assignments\Biosignal-Digital-Filters\Data\ECG_template.mat');
+ecg_template = typical_ECG.ECG_template;
+
+fs = 500; %sampling frequency
+[~,N] = size(ecg_template); %Number of datapoints
+T = linspace(0,N/fs,N); %Time scale
+
+nECG = awgn(ecg_template,5,'measured');
+
 %%
 sg310ECG = sgolayfilt(nECG,3,(2*11+1));
 figure('Name','Applying Saviztsky Golay Filters SG(3,11)');
@@ -24,7 +35,6 @@ ylabel('mV')
 %% i) Calculate the optimum parameters
 
 L_max = 30;
-N_max = min([(2*L_max),30]); %adjust the maximum order here
 err = NaN([L_max,2*L_max]);
 
 optimum_L = 100;
@@ -44,17 +54,21 @@ end
 
 figure
 surf(err)
+xlabel('L-Half length of window')
+ylabel('Polinomial Order')
+zlabel('MSE');
+
 optimum_L
 optimum_N
 
 %% Apply SG(N,L) for optimum N,L values
 %%
-sg310ECG = sgolayfilt(nECG,optimum_N,(2*optimum_L+1));
+sg_optimum = sgolayfilt(nECG,optimum_N,(2*optimum_L+1));
 figure('Name','Applying Saviztsky Golay Filters for optimum results');
 
 %%plot the signals
-plot(T,nECG,'g',T,ecg_template,'b',T,sg310ECG,'r');
-legend ('nECG', 'ECG template','sg310ECG')
+plot(T,sg310ECG,'g',T,ecg_template,'b',T,sg_optimum,'r');
+legend ('sg310', 'ECG template','SG-optimum')
 title('Applying optimum Saviztsky Golay Filter')
 xlabel('Time(s)')
 ylabel('mV')
@@ -62,7 +76,7 @@ ylabel('mV')
 %% Compare SG and MA optimum filters
 
 tic
-sg310ECG = sgolayfilt(nECG,optimum_N,(2*optimum_L+1));
+sg_optimum = sgolayfilt(nECG,optimum_N,(2*optimum_L+1));
 toc
 
 
@@ -74,7 +88,7 @@ toc
 group_delay_12 = 12/2*(1/fs);
 
 figure('Name','Comparing ECG_template and optimum MA and SG filter results');
-plot(T,ecg_template,T-group_delay_12,ma12ECG_2,T,sg310ECG,'k');
+plot(T,ecg_template,T-group_delay_12,ma12ECG_2,T,sg_optimum,'k');
 title('Comparing ECG_template and optimum MA and SG filter results');
 legend('Template','MA','SG');
 xlabel('Time(s)')
