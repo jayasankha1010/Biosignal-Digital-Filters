@@ -33,8 +33,10 @@ load ABR_rec.mat; %load data
 figure('Name','Recorded Data'), plot(ABR_rec), legend('Stimuli','ABR train'); %plot the data
 title('ABR recording and Audio Stimuli'),xlabel('Samples(n)'),ylabel('mV')
 
+%%
 %Automatically detect stimuli occurence
 thresh = find(ABR_rec(:,1)>50);
+%thresh
 % Extract stimulus points
 j=1;
 for i=1:length(thresh)-1
@@ -43,6 +45,7 @@ for i=1:length(thresh)-1
         j=j+1;
     end
 end
+%stim_point
 %% Make epochs
 % Window ABR epochs -80:399 points selected 
 % A window from -2ms to +10ms from stimulus point
@@ -68,14 +71,20 @@ snr_k = zeros(M,1);
 for m = 1:M
     yk = mean(epochs(:,(1:m)),2);
     mse_k(m) = immse(ensmbl_avg,yk);
-    snr_k(m) = snr(ensmbl_avg,ensmbl_avg-yk);
+    snr_k(m) = snr(ensmbl_avg,yk-ensmbl_avg);
 end
 
 figure;
 plot(mse_k);
+title('Mean squared error vs Number of epochs')
 
 k = linspace(1,M,M);
 ideal_SNR = 10.*log10(k)+snr_k(1);
+figure;
+plot(k,snr_k,'g',k,ideal_SNR,'r');
+title('SNR vs Number of Epochs');
+
+
 figure,
 % plot(k,mse_k)% linear plot
 % xlabel('Epochs(k)'), ylabel('MSE')
@@ -103,8 +112,9 @@ load ECG_rec.mat;
 [~,t] = size(ECG_rec);
 fs = 128;
 T = linspace(0,t/fs,t);
+%figure, plot(T,ECG_rec)
 figure, plot(T(125:325),ECG_rec(125:325))
-title('ECG Recording with repitive pattern')
+title('ECG Recording with repititive pattern')
 xlabel('Time (s)')
 ylabel('Voltage (mV)')
 
@@ -123,13 +133,15 @@ nECG = awgn(ECG_rec,5,'measured');
 expanded_ECG_template = zeros(size(nECG)); 
 expanded_ECG_template(1:length(ECG_template)) = ECG_template;
 [cross_corr, lags] = xcorr(nECG,expanded_ECG_template,'coeff');
-figure, plot(lags/fs,cross_corr)
-title('Cross Correllation with Sample ECG Waveform')
-xlabel('Lag (s)'), ylabel('Normalized Score')
+figure;
+plot(lags/fs,cross_corr);
+title('Cross Correllation with Sample ECG Waveform');
+xlabel('Lag (s)'), ylabel('Normalized Score');
 
 %% extracting pulses
 
 Threshold = 0.08;
+cross_corr > Threshold
 waves = lags(cross_corr > Threshold); 
 pulses = [];
 pulse_values = []; 
@@ -150,37 +162,45 @@ end
 %%  
 snr_values = zeros(size(pulses));
 mse_values = zeros(size(pulses));
-snr_values(1)=snr(ECG_template,pulse_train(1,:));
+snr_values(1)=snr(ECG_template,pulse_train(1,:)-ECG_template);   %%%%%check this - snr(ECG_template,pulse_train(1,:));
 mse_values(1) = immse(ECG_template, pulse_train(1,:));
 for k = 2:length(pulses)
     % calculate error
     mse_values(k) = immse(ECG_template, mean(pulse_train(1:k,:)));
-    snr_values(k) = snr(ECG_template,mean(pulse_train(1:k,:)));
+    snr_values(k) = snr(ECG_template, mean(pulse_train(1:k,:))-ECG_template);   %%%%here too
 end
 %% SNR improvement
+figure;
 plot(snr_values)
 title('Improvement of SNR of Ensemble Pulse'), xlabel('Number of Pulses in Ensemble Average'), ylabel('SNR (dB)')
 
+%% SNR improvement
+figure;
+plot(mse_values)
+title('Improvement of MSE of Ensemble Pulse'), xlabel('Number of Pulses in Ensemble Average'), ylabel('MSE')
 %% Plot the ensemble average and compare
-figure,plot(ECG_template,'LineWidth',1.5),hold on 
-plot(mean(pulse_train(1:10,:)))
-plot(mean(pulse_train(1:50,:)))
+figure;
+%plot(ECG_template,'k'); %'LineWidth',1.5,
+hold on;
+plot(pulse_train(1,:),'g')
+plot(mean(pulse_train(1:10,:)),'b')
+plot(mean(pulse_train(1:50,:)),'r')
 title('ECG Sample and Ensemble Average'),ylabel('Amplitude(mV)'), xlabel('Number of Samples(n)')
 legend('ECG Sample','Ensemble Avg 10 epochs','Ensemble Avg 50 epochs')
 hold off
 
 %% Why xcorr is better
-Trange = fs*4;
-figure
-subplot(3,1,1);
-plot(linspace(1,Trange,Trange)/fs,ECG_rec(1:Trange))
-title('ECG recording'),xlabel('Time (s)'), ylabel('Amplitude (mV)')
-subplot(3,1,2);
-plot(linspace(1,Trange,Trange)/fs,cross_corr(floor(length(cross_corr)/2)+1:floor(length(cross_corr)/2+Trange)))
-title('Adjusted Xcorr values'),xlabel('Lag (s)'), ylabel('Norm Cross Correlation (mV)')
-
-subplot(3,1,3);
-plot(linspace(1,Trange,Trange)/fs,nECG(1:Trange)), hold on
-plot(pulse_locations(pulse_locations<Trange)/fs,values(pulses<Trange),'*')
-hold off
-title('Noisy ECG and Pusle starting points'),xlabel('Time (s)'), ylabel('Amplitude (mV)')
+% Trange = fs*4;
+% figure
+% subplot(3,1,1);
+% plot(linspace(1,Trange,Trange)/fs,ECG_rec(1:Trange))
+% title('ECG recording'),xlabel('Time (s)'), ylabel('Amplitude (mV)')
+% subplot(3,1,2);
+% plot(linspace(1,Trange,Trange)/fs,cross_corr(floor(length(cross_corr)/2)+1:floor(length(cross_corr)/2+Trange)))
+% title('Adjusted Xcorr values'),xlabel('Lag (s)'), ylabel('Norm Cross Correlation (mV)')
+% 
+% subplot(3,1,3);
+% plot(linspace(1,Trange,Trange)/fs,nECG(1:Trange)), hold on
+% plot(pulses(pulses<Trange)/fs,pulse_values(pulses<Trange),'*')
+% hold off
+% title('Noisy ECG and Pusle starting points'),xlabel('Time (s)'), ylabel('Amplitude (mV)')
