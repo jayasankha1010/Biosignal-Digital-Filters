@@ -119,7 +119,7 @@ fvtool(b,a)
 MA10_order=10;
 b10 = ones(1,MA10_order);
 a10 =  MA10_order;
-fvtool(b,a)
+fvtool(b10,a10)
 
 %% filter with MA10
 
@@ -128,16 +128,16 @@ group_delay_10 = MA10_order/2*(1/fs);
 
 %% Plot all above
 figure('Name','Comparing MA(3) and MA(10)');
-plot(T,nECG,'y',T,ecg_template,'k',T-group_delay_3,ma3ECG_2,'b',T-group_delay_10,ma10ECG,'r');
+plot(T,nECG,'g',T,ecg_template,'k',T-group_delay_3,ma3ECG_2,'b',T-group_delay_10,ma10ECG,'r');
 title('Comparing MA(3) and MA(10)');
 legend ('nECG', 'ECG_{template}','ma3ECG_2','ma10ECG')
 xlabel('Time(s)')
 ylabel('mV')
 
-figure('Name','Comparing MA(3) and MA(10)');
+figure('Name','MA10 comparison with template');
 plot(T,ecg_template,'k',T-group_delay_10,ma10ECG,'r');
-title('Comparing MA(3) and MA(10)');
-legend ('nECG', 'ECG_{template}','ma3ECG_2','ma10ECG')
+title('MA10 comparison with template');
+legend ('ECG_{template}','ma10ECG')
 xlabel('Time(s)')
 ylabel('mV')
 
@@ -157,12 +157,13 @@ end
 %% ii) plot MSE vs. N.
 figure('Name','Optimum Moving Average filter')
 plot(orders,MSEs);
-title('Comparing MA(3) and MA(10)');
+title('MSE vs Order of MA filter');
 xlabel('Moving Average Filter Order');
 ylabel('Mean Squared Error');
 
 %% iii) Suggest the reason for high MSE values for low and high order MA filters
 
+% optimal order is 12
 %% Moving average filter function
 
 %brief: a function is defined to create a MA filter
