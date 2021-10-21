@@ -70,13 +70,13 @@ MA3_order = 3;
 ma3ECG_1 = MAfilt(nECG,MA3_order);
 
 %% ii) Derive the group delay
-group_delay_MA3 = floor((MA3_order)/2)*(1/fs);
+group_delay_MA3 = floor((MA3_order-1)/2)*(1/fs);
 
 %% iii) Plot and compare
 figure('Name','MA(3) filter evaluation')
-plot(T,nECG,'r')
+plot(T,nECG,'g')
 hold;
-plot(T-group_delay_MA3,ma3ECG_1,'b') %adjusted for group delay
+plot(T-group_delay_MA3,ma3ECG_1,'r') %adjusted for group delay
 title('Noisy signal and filtered signal')
 legend('ECG signal with noise','MA3 filtered signal');
 xlabel('Time (s)')
