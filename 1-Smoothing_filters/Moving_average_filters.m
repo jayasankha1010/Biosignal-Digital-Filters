@@ -40,8 +40,9 @@ ylabel('mV')
 nECG = awgn(ecg_template,5,'measured');
 %plot the noise added ECG Signal
 figure('Name','Noise added ECG signal')
-plot(T,nECG,'r')
-title('Noise added ECG signal')
+plot(T,nECG,'g',T,ecg_template,'b')
+title('Noise added ECG signal with ECG signal without noise')
+legend('Noise added ECG signal','ECG template without noise')
 xlabel('Time (s)')
 ylabel('mV')
 
@@ -52,7 +53,8 @@ figure('Name', 'PSD')
 window = rectwin(N);
 [px,w] = periodogram(nECG,window,[],fs);
 [pxt,wt] = periodogram(ecg_template,window,[],fs);
-semilogy(w,px,wt,pxt)
+semilogy(w,px,'g',wt,pxt,'b')
+%plot(w,px,wt,pxt)
 grid on
 title('Power Spectral Density Estimate')
 legend('ECG signal with noise','ECG template signal');
@@ -86,11 +88,11 @@ figure('Name', 'PSD')
 window = rectwin(N);
 [px,w] = periodogram(nECG,window,[],fs);
 [pxt,wt] = periodogram(ma3ECG_1,window,[],fs);
-semilogy(w,px,wt,pxt)
+semilogy(w,px,'b',wt,pxt,'r')
 grid on
 title('Power Spectral Density Estimate')
 legend('ECG signal with noise','MA3 Filtered signal');
-xlabel('Frequency-Hz')
+xlabel('Frequency (Hz)')
 ylabel('Amplitude')
 
 %% MA(3) filter implementation with the MATLAB built-in function
