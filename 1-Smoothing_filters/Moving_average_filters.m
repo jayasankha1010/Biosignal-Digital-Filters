@@ -175,6 +175,10 @@ function y = MAfilt(x,order)
     end
 end
 
+%brief: calculates the Mean Squared Error of filtered signal
+%params: template - noise free signal , x - input signal , order - order of the MA filter
+%return: mse - Mean squared error
+
 function mse = calcMSE(template,x,order)
     b = ones(1,order);
     a = order;
@@ -182,7 +186,8 @@ function mse = calcMSE(template,x,order)
     filtered = filter(b,a,x); 
     adjusted = zeros(size(template));
     adjusted(1:length(template)-group_d+1)= filtered(group_d:end);
-    errors = template-adjusted;
+    %errors = template-adjusted;
+    errors = template(1:length(template)-group_d+1)-adjusted(1:length(template)-group_d+1);
     sq_er = errors.^2;
     mse = (sum(sq_er))/length(sq_er);
 end
